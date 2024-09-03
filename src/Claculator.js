@@ -1,26 +1,43 @@
 import './Claculator.css';
 import { useState } from 'react';
+import { evaluate } from 'mathjs';
 
 function Claculator(){
-    //قسمت شرط برای جلو گیری از تکرار شدن دات یا نقطه در اسکریین میباشد
     let [result , setResult] = useState('')
-
-    const clickHanHandler = (event)=>{
-        let input = event.target.innerText;
-        if(input == '.' && result.includes('.')) return;
-        setResult(result + input);
+    let [hasDot , setHasDot] = useState(false)
+    let operators = ['+' , '-' , '/' , '*']
+    const checkInput = (text)=>{
+        if(text === '÷') return '/'
+        if(text === '×') return '*'
+        return text
     }
 
+    const clickHanHandler = (event)=>{
+        let input = checkInput(event.target.innerText);
+        if(input === '.'){
+            if(hasDot === true) return
+            else setHasDot(true)
+        } 
+        if(operators.includes(input)){
+            setHasDot(false)
+        }
+        setResult(result + input);
+    }
+    
     const clearScreen = ()=>{
         setResult('')
+        setHasDot(false)
     }
 
     const backSpaceBtn = ()=>{
-        setResult(result.slice(0 , -1))
+        if(result.endsWith('.')){
+            setHasDot(false)
+        }
+        setResult(result.slice(0,-1))
     }
-    //eval یه تابعیه که ارزیابی میکنه و بعد با استفاده از string به رشته تبدیلش میکنیم
     const equalBtn = ()=>{
-        setResult(String(eval(result)));
+        setResult(String(evaluate(result)));
+        setHasDot(false)
     }
 
     return(
@@ -29,11 +46,11 @@ function Claculator(){
             <div className="btns">
                 <button onClick = {clearScreen}  className='bigBtn color'>Clear</button>
                 <button onClick = {backSpaceBtn}  className='color'>C</button>
-                <button onClick = {clickHanHandler}  className='color'>&divide;</button>
+                <button onClick = {clickHanHandler}  className='color'>÷</button>
                 <button onClick = {clickHanHandler} >7</button>
                 <button onClick = {clickHanHandler} >8</button>
                 <button onClick = {clickHanHandler} >9</button>
-                <button onClick = {clickHanHandler}  className='color'>&#215;</button>
+                <button onClick = {clickHanHandler}  className='color'>×</button>
                 <button onClick = {clickHanHandler} >4</button>
                 <button onClick = {clickHanHandler} >5</button>
                 <button onClick = {clickHanHandler} >6</button>
